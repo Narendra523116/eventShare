@@ -1,4 +1,4 @@
-const Managment = require("../models/managmentModel");
+const Managment = require("../models/managementModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config()
@@ -19,7 +19,7 @@ const managmentSignup = async (req, res) => {
         });
 
         await managment.save();
-        res.status(201).json({ message: "managment registered successfully" });
+        res.status(201).json({ message: "management registered successfully" });
     } catch (error) {
         res.status(500).json({ error: "Signup failed" });
     }
@@ -35,7 +35,7 @@ const managmentLogin = async (req, res) => {
         const isMatch = await bcrypt.compare(password, managment.password);
         if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
-        const token = jwt.sign({ id: managment._id, role: "managment" }, process.env.JWT_SECRET, { expiresIn: "1m" });
+        const token = jwt.sign({ id: managment._id, role: "management" }, process.env.JWT_SECRET, { expiresIn: "1m" });
 
         res.json({ message: "Login successful", token });
     } catch (error) {

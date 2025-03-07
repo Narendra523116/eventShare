@@ -1,35 +1,16 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 const facultySchema = mongoose.Schema({
-    username:{
-        type:String,
-        required:true
+    _id: { 
+        type: String, // Faculty ID as the unique identifier
+        required: true 
     },
-    email:{
-        type:String,
-        required:true,
-        unique:true
-    },
-    password:{
-        type:String,
-        required:true
-    },
-    mobileNumber:{
-        type:String,
-        requried:true
-    },
-    dept:{
-        type:String,
-        required:true
-    },
-    role:{
-        type:String,
-        required:true,
-        enum:["faculty", "hod"]
-    }
-},
-{
-    timestamps: true
-});
+    username: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    mobileNumber: { type: String, required: true },
+    dept: { type: String, required: true },
+    role: { type: String, enum: ["faculty", "hod"], required: true }
+}, { timestamps: true });
 
-const Faculty = mongoose.model("faculty",  facultySchema)
-module.exports = Faculty
+const Faculty = mongoose.model("Faculty", facultySchema, "FacultyMembers");
+module.exports = Faculty;
