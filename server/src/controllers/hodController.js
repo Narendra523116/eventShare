@@ -5,12 +5,13 @@ require("dotenv").config()
 
 const hodSignup = async (req, res) => {
     try {
-        const { username, email, password, mobileNumber, dept } = req.body;
+        const { id, username, email, password, mobileNumber, dept } = req.body;
 
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const hod = new Hod({
+            _id:id,
             username,
             email,
             password: hashedPassword,
@@ -31,13 +32,15 @@ const hodLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const hod = await Hod.findOne({ email });
+        const hod = await Hod.findOne({ 
+            $or: [{ email: email }, { _id: _id }]
+        });
         if (!hod) return res.status(404).json({ error: "User not found" });
 
         const isMatch = await bcrypt.compare(password, hod.password);
         if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
-        const token = jwt.sign({ id: hod._id, role: "hod" }, process.env.JWT_SECRET, { expiresIn: "1m" });
+        const token = jwt.sign({ id: hod._id, role: "hod" }, process.env.JWT_SECRET, { expiresIn: "10d" });
 
         res.json({ message: "Login successful", token });
     } catch (error) {

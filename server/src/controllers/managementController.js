@@ -4,18 +4,20 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config()
 
 
-const managmentSignup = async (req, res) => {
+const managementSignup = async (req, res) => {
     try {
-        const { email, password, mobileNumber} = req.body;
+        const { id, username, email, password, mobileNumber} = req.body;
 
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const managment = new Managment({
+            _id:id,
+            username, 
             email,
             password: hashedPassword,
             mobileNumber,
-            role : "managment"
+            role : "management"
         });
 
         await managment.save();
@@ -25,17 +27,19 @@ const managmentSignup = async (req, res) => {
     }
 };
 
-const managmentLogin = async (req, res) => {
+const managementLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const managment = await Managment.findOne({ email });
+        const managment = await Managment.findOne({ 
+            $or: [{ email: email }, { _id: _id }]
+        });
         if (!managment) return res.status(404).json({ error: "User not found" });
 
         const isMatch = await bcrypt.compare(password, managment.password);
         if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
-        const token = jwt.sign({ id: managment._id, role: "management" }, process.env.JWT_SECRET, { expiresIn: "1m" });
+        const token = jwt.sign({ id: managment._id, role: "management" }, process.env.JWT_SECRET, { expiresIn: "10d" });
 
         res.json({ message: "Login successful", token });
     } catch (error) {
@@ -43,4 +47,4 @@ const managmentLogin = async (req, res) => {
     }
 };
 
-module.exports = {managmentSignup, managmentLogin}
+module.exports = {managementSignup, managementLogin}

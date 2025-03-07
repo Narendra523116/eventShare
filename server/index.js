@@ -3,7 +3,8 @@ const cors = require("cors")
 const studentRoutes = require("./src/routes/studentRoutes");
 const facultyRoutes = require("./src/routes/facultyRoutes");
 const hodRoutes = require("./src/routes/hodRoutes");
-const managementRoutes = require("./src/routes/managmentRoutes");
+const managementRoutes = require("./src/routes/managementRoutes");
+const eventRoutes = require("./routes/eventRoutes");
 
 const dbConnect = require("./src/config/dbconnect")
 require("dotenv").config()
@@ -31,6 +32,7 @@ app.use("/api/student", studentRoutes);
 app.use("/api/faculty", facultyRoutes);
 app.use("/api/hod", hodRoutes);
 app.use("/api/management", managementRoutes);
+app.use("/api/events", eventRoutes);
 
 app.listen(PORT, ()=>{
     console.log(`server is running in the port ${PORT} succesfully`)

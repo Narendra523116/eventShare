@@ -6,12 +6,13 @@ require("dotenv").config()
 
 const studentSignup = async (req, res) => {
     try {
-        const { username, email, password, mobileNumber, dept, year } = req.body;
+        const { id, username, email, password, mobileNumber, dept, year } = req.body;
         console.log(req.body);
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const student = new Student({
+            _id: id,
             username,
             email,
             password: hashedPassword,
@@ -33,13 +34,15 @@ const studentLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const student = await Student.findOne({ email });
+        const student = await Student.findOne({ 
+            $or: [{ email: email }, { _id: _id }]
+        });
         if (!student) return res.status(404).json({ error: "User not found" });
 
         const isMatch = await bcrypt.compare(password, student.password);
         if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
-        const token = jwt.sign({ id: student._id, role: "student" }, process.env.JWT_SECRET, { expiresIn: "1m" });
+        const token = jwt.sign({ id: student._id, role: "student" }, process.env.JWT_SECRET, { expiresIn: "10d" });
 
         res.json({ message: "Login successful", token });
     } catch (error) {
