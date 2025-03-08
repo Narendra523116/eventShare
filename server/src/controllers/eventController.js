@@ -3,7 +3,7 @@ const Event = require("../models/eventModel");
 // adding the event
 const addEvent = async (req, res) => {
     try {
-        const { name, description, venue, date, organizers, approvedBy } = req.body;
+        const { name, eventType, description, venue, date, organizers, approvedBy } = req.body;
         const id = name.toLowerCase().replace(/\s+/g, "-") + "-" + new Date(date).toISOString().split("T")[0]; // ensuring that id's dont differ just by case
 
         //checking whether an event existed before with that id 
@@ -13,7 +13,7 @@ const addEvent = async (req, res) => {
         }
 
         //if no id existed prior then that event can be created
-        const newEvent = new Event({ _id:id, name, description, venue, date, organizers, approvedBy });
+        const newEvent = new Event({ _id:id, name, eventType, description, venue, date, organizers, approvedBy });
         await newEvent.save();
         res.status(201).json({ message: "Event added successfully", event: newEvent });
     } catch (error) {
@@ -36,11 +36,21 @@ const getEventById = async (req, res) => {
 
 //retriving all the events
 const getAllEvents = async (req, res) => {
-    try{
-        const events = await Event.find();
-        res.status(201).json(events)
-    }catch(error){
-        res.status(500).json({message: "Error fetching the event", error });
+    try {
+        const { types } = req.query; // fetching events based on the user preference
+
+        let filter = {};
+        if (types) {
+            const eventTypesArray = types.split(",");
+            if (eventTypesArray.length > 0) {
+                filter.eventType = { $in: eventTypesArray };
+            }
+        }
+
+        const events = await Event.find(filter);
+        res.status(200).json(events);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
     }
 };
 

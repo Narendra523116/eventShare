@@ -1,6 +1,6 @@
 const express = require("express");
 const { addEvent, updateEvent, deleteEvent, getEventById, getAllEvents, registerParticipant, updateWinners } = require("../controllers/eventController");
-const { authenticate, authorize } = require("../middlewares/authMiddleware");
+const { authenticate, authorize } = require("../middlewares/authMiddleWare");
 
 const router = express.Router();
 

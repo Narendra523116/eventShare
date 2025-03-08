@@ -9,6 +9,14 @@ const managementSignup = async (req, res) => {
         const { id, username, email, password, mobileNumber} = req.body;
 
         // Hash the password
+        const user = await Student.findOne({ 
+            $or: [{ email: email }, {_id : id}]
+        });
+
+        if(user){
+            return res.status(409).json({message : "user already exists"})
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const managment = new Managment({

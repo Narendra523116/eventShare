@@ -8,7 +8,16 @@ const facultySignup = async (req, res) => {
     try {
         const { id, username, email, password, mobileNumber, dept } = req.body;
 
+
+        const user = await Faculty.findOne({ 
+                $or: [{ email: email }, {_id : id}]
+        });
+
         // Hash the password
+        if(user){
+            return res.status(409).json({message : "user already exists"})
+        }
+        
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const faculty = new Faculty({
@@ -24,6 +33,7 @@ const facultySignup = async (req, res) => {
         await faculty.save();
         res.status(201).json({ message: "faculty registered successfully" });
     } catch (error) {
+        console.log(error)
         res.status(500).json({ error: "Signup failed" });
     }
 };
@@ -33,7 +43,7 @@ const facultyLogin = async (req, res) => {
         const { email, password } = req.body;
 
         const faculty = await Faculty.findOne({ 
-            $or: [{ email: email }, { _id: _id }]
+            $or: [{ email: email }]
         });
         if (!faculty) return res.status(404).json({ error: "User not found" });
 

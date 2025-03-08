@@ -8,6 +8,15 @@ const hodSignup = async (req, res) => {
         const { id, username, email, password, mobileNumber, dept } = req.body;
 
         // Hash the password
+
+        const user = await Student.findOne({ 
+            $or: [{ email: email }, {_id : id}]
+        });
+        
+        if(user){
+            return res.status(409).json({message : "user already exists"})
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const hod = new Hod({

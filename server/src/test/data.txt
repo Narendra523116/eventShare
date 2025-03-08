@@ -1,0 +1,8 @@
+all the exercised moudules are updated here
+
+features need to be tested 
+
+1. signup and login routes for students, faculty, hod and management
+2. event routes bassed on authorization
+
+1. student routes (singup and login)

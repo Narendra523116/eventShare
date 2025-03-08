@@ -11,6 +11,15 @@ const studentSignup = async (req, res) => {
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        const user = await Student.findOne({ 
+            $or: [{ email: email }, {_id : id}]
+        });
+
+        if(user){
+            return res.status(409).json({message : "user already exists"})
+        }
+
+
         const student = new Student({
             _id: id,
             username,
@@ -35,7 +44,7 @@ const studentLogin = async (req, res) => {
         const { email, password } = req.body;
 
         const student = await Student.findOne({ 
-            $or: [{ email: email }, { _id: _id }]
+            $or: [{ email: email }]
         });
         if (!student) return res.status(404).json({ error: "User not found" });
 

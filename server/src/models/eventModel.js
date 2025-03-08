@@ -1,9 +1,22 @@
 const mongoose = require("mongoose");
 
+
+const eventTypes = [
+    "Technical",
+    "Cultutral",
+    "Sports",
+    "Literary",
+    "Entrepreneurship",
+    "Social",
+    "Workshop",
+    "Fun"
+]
+
 const eventSchema = mongoose.Schema(
     {
-        _id: { type: String, required: true, unique: true },
+        _id: { type: String, required: true },
         name: { type: String, required: true },
+        eventType: {type: String, required: true, enum: eventTypes},
         description: { type: String, required: true },
         venue: { type: String, required: true },
         date: { type: Date, required: true },
@@ -39,14 +52,6 @@ const eventSchema = mongoose.Schema(
     },
     { timestamps: true }
 );
-
-eventSchema.pre("save", function (next) {
-    if (!this._id) {
-        this._id = this.name.toLowerCase().replace(/\s+/g, "-") + "-" + this.date.toISOString().split("T")[0];
-    }
-    this._id = this._id.toLowerCase();
-    next();
-});
 
 const Event = mongoose.model("Event", eventSchema);
 module.exports = Event;
