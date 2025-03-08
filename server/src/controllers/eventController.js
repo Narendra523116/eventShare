@@ -1,4 +1,6 @@
 const Event = require("../models/eventModel");
+const Student = require("../models/studentModel");
+const student = require("../models/studentModel")
 
 // adding the event
 const addEvent = async (req, res) => {
@@ -65,7 +67,8 @@ const updateEvent = async (req, res) => {
         }
 
         await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.status(201).json({ message: "Event updated successfully", event });
+        const updatedEvent = await Event.findById(req.params.id)
+        res.status(201).json({ message: "Event updated successfully",  updatedEvent});
     } catch (error) {
         res.status(500).json({ message: "Error updating event", error });
     }
@@ -89,14 +92,20 @@ const deleteEvent = async (req, res) => {
         res.status(500).json({ message: "Error deleting event", error: error.message });
     }
 }
+
 const registerParticipant = async (req, res) => {
     try {
+        console.log(req.params)
+        console.log(req.user)
         const event = await Event.findById(req.params.id);
         if (!event) return res.status(404).json({ message: "Event not found" });
+        const student = await Student.findById(req.user.id)
+        console.log(student)
+        if(!student) return res.status(404).json( {message : "Invalid roll no"} )
 
         // Checking if the user is already registered or not
         const isAlreadyRegistered = event.participants.some(
-            (participant) => participant.toString().toLowerCase() === req.user._id.toString().toLowerCase()
+            (participant) => participant._id.toString().toLowerCase() === req.user.id.toString().toLowerCase()
         );
 
         if (isAlreadyRegistered) {
@@ -104,7 +113,7 @@ const registerParticipant = async (req, res) => {
         }
 
         // if the user is not there then we can add him / her
-        event.participants.push(req.user._id);
+        event.participants.push({_id: req.user.id, name: student.username});
         await event.save();
 
         res.status(201).json({ message: "Successfully registered for event" });

@@ -22,33 +22,33 @@ const eventSchema = mongoose.Schema(
         date: { type: Date, required: true },
         organizers: [
             {
-                id: { type: String, required: true },
+                _id: { type: String, required: true },
                 name: { type: String, required: true },
                 role: { type: String, enum: ["student", "faculty", "hod", "management"] }
             }
         ],
         approvedBy: [
             {
-                id: { type: String, required: true },
+                _id: { type: String, required: true },
                 name: { type: String, required: true },
                 role: { type: String, enum: ["faculty", "hod", "management"] }
             }
         ],
         participants: [
             {
-                id: { type: String, required: true },
+                _id: { type: String, required: true },
                 name: { type: String, required: true }
             }
         ],
         isCompleted: { type: Boolean, default: false },
         winners: [
             {
-                id: { type: String, required: true },
+                _id: { type: String, required: true },
                 name: { type: String, required: true },
                 position: { type: Number, required: true }
             }
         ],
-        images: [{ type: String }]
+        images: [{ _type: String }]
     },
     { timestamps: true }
 );

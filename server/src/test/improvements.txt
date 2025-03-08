@@ -1,0 +1,14 @@
+_______________________--------------------BACKEND--------------------------___________________________
+1. Event Routes 
+    1. route for updating the content in the participants
+    2. route for deleting participants
+    3. route for updating winners and images also
+    4. route for deleting images 
+    5. route for extracting all the participants in an event 
+
+
+
+
+
+_______________________--------------------FRONTEND--------------------------___________________________
+1. NOT YET STARTED

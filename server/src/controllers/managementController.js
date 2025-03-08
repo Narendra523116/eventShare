@@ -1,6 +1,7 @@
 const Managment = require("../models/managementModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Management = require("../models/managementModel");
 require("dotenv").config()
 
 
@@ -9,7 +10,7 @@ const managementSignup = async (req, res) => {
         const { id, username, email, password, mobileNumber} = req.body;
 
         // Hash the password
-        const user = await Student.findOne({ 
+        const user = await Management.findOne({ 
             $or: [{ email: email }, {_id : id}]
         });
 
@@ -31,6 +32,7 @@ const managementSignup = async (req, res) => {
         await managment.save();
         res.status(201).json({ message: "management registered successfully" });
     } catch (error) {
+        console.log(error)
         res.status(500).json({ error: "Signup failed" });
     }
 };
@@ -40,7 +42,7 @@ const managementLogin = async (req, res) => {
         const { email, password } = req.body;
 
         const managment = await Managment.findOne({ 
-            $or: [{ email: email }, { _id: _id }]
+            $or: [{ email: email }]
         });
         if (!managment) return res.status(404).json({ error: "User not found" });
 

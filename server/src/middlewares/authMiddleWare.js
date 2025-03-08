@@ -11,9 +11,10 @@ const authenticate = async (req, res, next) => {
         }
 
         const token = header.replace("Bearer ", "");
-        const verify = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        const verify = jwt.verify(token, process.env.JWT_SECRET);
+        console.log(verify)
 
-        req.user = verify; 
+        req.user = verify;
         next(); 
     } catch (error) {
         return res.status(401).json({ message: "Invalid or expired token" });

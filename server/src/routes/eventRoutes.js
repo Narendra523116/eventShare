@@ -9,10 +9,7 @@ router.put("/update/:id", authenticate, authorize(["faculty", "hod", "management
 router.delete("/delete/:id", authenticate, authorize(["faculty", "hod", "management"]), deleteEvent); // Cancel event
 router.get("/:id", getEventById); // Get event by ID
 router.get("/", getAllEvents); // Get all events
-router.post("/register/:id", authenticate, (req, res, next) => {
-    req.params.id = req.params.id.toLowerCase();
-    next();
-}, registerParticipant);  // Students register for an event
+router.post("/register/:id", authenticate, registerParticipant);  // Students register for an event
 router.put("/update-winners/:id", authenticate, authorize(["faculty", "hod", "management"]), updateWinners); // Organizers update winners & images
 
 module.exports = router;

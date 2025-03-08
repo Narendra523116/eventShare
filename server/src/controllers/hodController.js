@@ -9,7 +9,7 @@ const hodSignup = async (req, res) => {
 
         // Hash the password
 
-        const user = await Student.findOne({ 
+        const user = await Hod.findOne({ 
             $or: [{ email: email }, {_id : id}]
         });
         
@@ -42,7 +42,7 @@ const hodLogin = async (req, res) => {
         const { email, password } = req.body;
 
         const hod = await Hod.findOne({ 
-            $or: [{ email: email }, { _id: _id }]
+            $or: [{ email: email }]
         });
         if (!hod) return res.status(404).json({ error: "User not found" });
 
@@ -53,6 +53,7 @@ const hodLogin = async (req, res) => {
 
         res.json({ message: "Login successful", token });
     } catch (error) {
+        console.log(error)
         res.status(500).json({ error: "Login failed" });
     }
 };

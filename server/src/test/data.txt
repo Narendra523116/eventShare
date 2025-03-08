@@ -1,8 +1,18 @@
+_______________________--------------------BACKEND--------------------------___________________________
+
 all the exercised moudules are updated here
-
 features need to be tested 
-
 1. signup and login routes for students, faculty, hod and management
 2. event routes bassed on authorization
 
-1. student routes (singup and login)
+1. student routes (signup and login) ✅
+2. Faculty routes (signup and login) ✅
+3. Hod routes (signup and login) ✅ 
+4. management routes (signup and login) ✅
+5. Event routes (addEvent, updateEvent, Deleteevent, retriving all the events, updating participats, retriving specific type events, updaitng winners and uploading images) ✅😴
+
+in Events Routes all are tested except updating winners and uplaodding images routes
+
+
+_______________________--------------------FRONTEND--------------------------___________________________
+
