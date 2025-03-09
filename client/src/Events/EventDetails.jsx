@@ -5,40 +5,92 @@ import { useAuth } from "../Context/AuthContext"; // Import the useAuth hook
 
 function EventDetails() {
   const { id } = useParams();
-  const { token, isLoggedIn } = useAuth(); // Retrieve the token from context
+  const { token, isLoggedIn, user } = useAuth(); // Retrieve token & user info
   const [event, setEvent] = useState(null);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:7000/api/events/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the request
-          },
+        const response = await axios.get(`https://eventshare-2.onrender.com/api/events/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
         setEvent(response.data);
+
+        // Check if user is already registered
+        if (Array.isArray(response.data.participants) && user?.id) {
+          setIsRegistered(response.data.participants.includes(user.id));
+        }
       } catch (error) {
         console.error("Error fetching event details:", error);
+        setError("Failed to fetch event details. Please try again.");
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchEventDetails();
-  }, [id, token]); // Re-fetch event details if the ID or token changes
+    if (isLoggedIn) {
+      fetchEventDetails();
+    } else {
+      setLoading(false); // Reset loading state if user is not logged in
+    }
+  }, [token, isLoggedIn, user?.id, id]);
 
-  // If the user is not logged in, display a message
+  const handleRegister = async () => {
+    try {
+      await axios.post(
+        `https://eventshare-2.onrender.com/api/events/register/${id}`,
+        { id: user.id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setIsRegistered(true);
+      setError(""); // Clear any previous errors
+    } catch (error) {
+      console.error("Registration failed:", error);
+      setError("Registration failed. Please try again.");
+    }
+  };
+
+  const handleWithdraw = async () => {
+    try {
+      await axios.post(
+        `https://eventshare-2.onrender.com/api/events/${id}/withdraw`,
+        { userId: user.id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setIsRegistered(false);
+      setError(""); // Clear any previous errors
+    } catch (error) {
+      console.error("Withdrawal failed:", error);
+      setError("Withdrawal failed. Please try again.");
+    }
+  };
+
+  // If user is not logged in, show access restriction message
   if (!isLoggedIn) {
     return (
       <div className="container my-5 text-center">
         <h2 className="text-danger">🔒 Access Restricted</h2>
         <p className="lead">You need to log in to view events.</p>
-        <Link to="/login" className="btn btn-primary">
+        <Link to="/login" className="btn btn-primary btn-lg px-4">
           Log In
         </Link>
       </div>
     );
   }
 
-  if (!event) return <p className="text-center text-muted">Loading...</p>;
+  if (loading) return <p className="text-center text-muted">Loading...</p>;
+
+  if (!event) {
+    return (
+      <div className="container my-5 text-center">
+        <h2 className="text-danger">Error</h2>
+        <p className="lead">{error || "Event not found."}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container my-5">
@@ -72,6 +124,26 @@ function EventDetails() {
         >
           {event.isCompleted ? "✔ Event Completed" : "⏳ Event Upcoming"}
         </p>
+
+        {/* Error Message */}
+        {error && (
+          <div className="alert alert-danger mt-4">
+            {error}
+          </div>
+        )}
+
+        {/* Register/Withdraw Button */}
+        <div className="text-center mt-4">
+          {isRegistered ? (
+            <button className="btn btn-danger btn-lg px-4" onClick={handleWithdraw}>
+              Withdraw from Event
+            </button>
+          ) : (
+            <button className="btn btn-success btn-lg px-4" onClick={handleRegister}>
+              Register for Event
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

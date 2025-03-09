@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useAuth } from "../Context/AuthContext"
+import { useAuth } from "../Context/AuthContext";
 
 function Login() {
   const { login } = useAuth(); // Use the login function from context
-  const [formData, setFormData] = useState({ email: '', password: '', role: 'student' });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -17,8 +17,24 @@ function Login() {
     e.preventDefault();
     setError('');
 
-    const { role, email, password } = formData;
-    const URL = `http://localhost:7000/api/${role}/login`; // Dynamic API URL
+    const { email, password } = formData;
+
+    // Determine the role based on the email prefix
+    let role = '';
+    if (email.startsWith('stu-')) {
+      role = 'student';
+    } else if (email.startsWith('fac-')) {
+      role = 'faculty';
+    } else if (email.startsWith('hod-')) {
+      role = 'hod';
+    } else if (email.startsWith('man-')) {
+      role = 'management';
+    } else {
+      setError("Invalid email format. Please check your email.");
+      return;
+    }
+
+    const URL = `https://eventshare-2.onrender.com/api/${role}/login`; // Dynamic API URL
 
     try {
       const response = await axios.post(URL, { email, password });
@@ -41,7 +57,7 @@ function Login() {
   };
 
   const handleReset = () => {
-    setFormData({ email: '', password: '', role: 'student' });
+    setFormData({ email: '', password: '' });
     setError('');
   };
 
@@ -54,23 +70,6 @@ function Login() {
         {error && <div className="alert alert-danger">{error}</div>}
 
         <form>
-          {/* Role Selection Dropdown */}
-          <div className="mb-3">
-            <label htmlFor="role" className="form-label">Select Role</label>
-            <select
-              id="role"
-              className="form-select"
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-            >
-              <option value="student">Student</option>
-              <option value="faculty">Faculty</option>
-              <option value="hod">HOD</option>
-              <option value="management">Management</option>
-            </select>
-          </div>
-
           <div className="mb-3">
             <label htmlFor="email" className="form-label">Email address</label>
             <input
@@ -81,6 +80,7 @@ function Login() {
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter your email"
+              required
             />
           </div>
 
@@ -94,6 +94,7 @@ function Login() {
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter your password"
+              required
             />
           </div>
 

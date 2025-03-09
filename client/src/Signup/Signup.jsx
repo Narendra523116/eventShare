@@ -5,7 +5,6 @@ import { useAuth } from "../Context/AuthContext";
 
 function Signup() {
   const { login } = useAuth(); // Use the login function from context
-  const [role, setRole] = useState("student");
   const [formData, setFormData] = useState({
     id: "",
     username: "",
@@ -25,28 +24,22 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
-    console.log("Form Data before sending:", formData);
 
-    const baseUrl = "http://localhost:7000";
+    // Validate email format for students
+    if (!formData.email.startsWith('stu-')) {
+      setMessage("Invalid email format. Student emails must start with 'stu-'.");
+      return;
+    }
+
+    const baseUrl = "https://eventshare-2.onrender.com";
 
     try {
-      let apiUrl = "/api/student";
-      if (role === "faculty") apiUrl = "/api/faculty";
-      else if (role === "hod") apiUrl = "/api/hod";
-      else if (role === "management") apiUrl = "/api/management";
-
-      let url = baseUrl + apiUrl + "/signup";
+      const url = baseUrl + "/api/student/signup"; // Only students can sign up
       console.log(url);
 
-      const response = await axios.post(url, { ...formData, role });
-
-      // Extract token from response
-      const { token } = response.data;
-
-      login(token); // Use the login function from context to store the token and update state
+      const response = await axios.post(url, { ...formData, role: 'student' });
 
       setMessage("Signup successful! Please log in.");
-      navigate('/'); // Redirect to home page
     } catch (error) {
       setMessage("Error: " + (error.response?.data?.message || "Signup failed"));
     }
@@ -72,16 +65,6 @@ function Signup() {
         {message && <p className="alert alert-info">{message}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label">Select Your Role:</label>
-            <select className="form-control" value={role} onChange={(e) => setRole(e.target.value)}>
-              <option value="student">Student</option>
-              <option value="faculty">Faculty</option>
-              <option value="hod">HOD</option>
-              <option value="management">Management</option>
-            </select>
-          </div>
-
-          <div className="mb-3">
             <label className="form-label">Id:</label>
             <input type="text" name="id" className="form-control" value={formData.id} onChange={handleChange} required />
           </div>
@@ -93,7 +76,15 @@ function Signup() {
 
           <div className="mb-3">
             <label className="form-label">Email:</label>
-            <input type="email" name="email" className="form-control" value={formData.email} onChange={handleChange} required />
+            <input
+              type="email"
+              name="email"
+              className="form-control"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email (must start with 'stu-')"
+              required
+            />
           </div>
 
           <div className="mb-3">
@@ -106,19 +97,15 @@ function Signup() {
             <input type="text" name="mobileNumber" className="form-control" value={formData.mobileNumber} onChange={handleChange} required />
           </div>
 
-          {(role === "student" || role === "faculty" || role === "hod") && (
-            <div className="mb-3">
-              <label className="form-label">Department:</label>
-              <input type="text" name="dept" className="form-control" value={formData.dept} onChange={handleChange} required />
-            </div>
-          )}
+          <div className="mb-3">
+            <label className="form-label">Department:</label>
+            <input type="text" name="dept" className="form-control" value={formData.dept} onChange={handleChange} required />
+          </div>
 
-          {role === "student" && (
-            <div className="mb-3">
-              <label className="form-label">Year:</label>
-              <input type="number" name="year" className="form-control" value={formData.year} onChange={handleChange} required />
-            </div>
-          )}
+          <div className="mb-3">
+            <label className="form-label">Year:</label>
+            <input type="number" name="year" className="form-control" value={formData.year} onChange={handleChange} required />
+          </div>
 
           {/* Buttons aligned in a row with spacing */}
           <div className="d-grid gap-2 d-md-flex justify-content-md-between">
