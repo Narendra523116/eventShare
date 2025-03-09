@@ -6,7 +6,7 @@ const hodRoutes = require("./src/routes/hodRoutes");
 const managementRoutes = require("./src/routes/managementRoutes");
 const eventRoutes = require("./src/routes/eventRoutes");
 
-const dbConnect = require("./src/config/dbconnect")
+const dbConnect = require("./src/config/dbConnect")
 require("dotenv").config()
 
 const app = express()
