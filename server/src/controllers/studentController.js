@@ -53,7 +53,7 @@ const studentLogin = async (req, res) => {
 
         const token = jwt.sign({ id: student._id, role: "student" }, process.env.JWT_SECRET, { expiresIn: "10d" });
 
-        res.json({ message: "Login successful", token });
+        res.status(200).json({ message: "Login successful", token });
     } catch (error) {
         console.log(error)
         res.status(500).json({ error: "Login failed" });
