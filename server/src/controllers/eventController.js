@@ -123,6 +123,35 @@ const registerParticipant = async (req, res) => {
 };
 
 
+
+// Revoke participant registration
+const revokeParticipant = async (req, res) => {
+    try {
+        const eventId = req.params.id;
+        const userId = req.user.id;
+
+        const event = await Event.findById(eventId);
+        if (!event) {
+            return res.status(404).json({ message: "Event not found" });
+        }
+
+        // Check if the user is registered
+        const participantIndex = event.participants.findIndex(participant => participant._id === userId);
+        if (participantIndex === -1) {
+            return res.status(400).json({ message: "You are not registered for this event" });
+        }
+
+        // Remove participant
+        event.participants.splice(participantIndex, 1);
+        await event.save();
+
+        res.status(200).json({ message: "Unregistered successfully", event });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+
 // updating the winners in the event space after the event is completed by the organizers
 const updateWinners = async (req, res) => {
     try {
@@ -142,4 +171,4 @@ const updateWinners = async (req, res) => {
     }
 };
 
-module.exports = { addEvent, getEventById, getAllEvents, updateEvent, deleteEvent, registerParticipant, updateWinners };
+module.exports = { addEvent, getEventById, getAllEvents, updateEvent, deleteEvent, registerParticipant, revokeParticipant, updateWinners };

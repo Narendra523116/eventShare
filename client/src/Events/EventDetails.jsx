@@ -4,22 +4,23 @@ import axios from "axios";
 import { useAuth } from "../Context/AuthContext"; // Import the useAuth hook
 
 function EventDetails() {
-  const { id } = useParams();
-  const { token, isLoggedIn, user } = useAuth(); // Retrieve token & user info
+  const { id } = useParams(); // Event ID from URL params
+  const { token, isLoggedIn, user } = useAuth(); // Retrieve token, login status, and user info
   const [event, setEvent] = useState(null);
   const [isRegistered, setIsRegistered] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Fetch event details and check user registration status
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
-        const response = await axios.get(`https://eventshare-2.onrender.com/api/events/${id}`, {
+        const response = await axios.get(`http://localhost:7000/api/events/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setEvent(response.data);
 
-        // Check if user is already registered
+        // Check if the user is already registered for the event
         if (Array.isArray(response.data.participants) && user?.id) {
           setIsRegistered(response.data.participants.includes(user.id));
         }
@@ -36,16 +37,17 @@ function EventDetails() {
     } else {
       setLoading(false); // Reset loading state if user is not logged in
     }
-  }, [token, isLoggedIn, user?.id, id]);
+  }, [isLoggedIn, id, token, user?.id]); // Re-fetch when any of these dependencies change
 
+  // Handle event registration
   const handleRegister = async () => {
     try {
       await axios.post(
-        `https://eventshare-2.onrender.com/api/events/register/${id}`,
-        { id: user.id },
+        `http://localhost:7000/api/events/register/${id}`,
+        {}, // No need to send additional data in the body
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setIsRegistered(true);
+      setIsRegistered(true); // Update registration status
       setError(""); // Clear any previous errors
     } catch (error) {
       console.error("Registration failed:", error);
@@ -53,14 +55,15 @@ function EventDetails() {
     }
   };
 
+  // Handle event withdrawal
   const handleWithdraw = async () => {
     try {
       await axios.post(
-        `https://eventshare-2.onrender.com/api/events/${id}/withdraw`,
-        { userId: user.id },
+        `http://localhost:7000/api/events/${id}/withdraw`,
+        {}, // No need to send additional data in the body
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setIsRegistered(false);
+      setIsRegistered(false); // Update registration status
       setError(""); // Clear any previous errors
     } catch (error) {
       console.error("Withdrawal failed:", error);
@@ -81,8 +84,10 @@ function EventDetails() {
     );
   }
 
+  // Show loading state while fetching data
   if (loading) return <p className="text-center text-muted">Loading...</p>;
 
+  // Show error message if event is not found
   if (!event) {
     return (
       <div className="container my-5 text-center">
@@ -134,15 +139,12 @@ function EventDetails() {
 
         {/* Register/Withdraw Button */}
         <div className="text-center mt-4">
-          {isRegistered ? (
             <button className="btn btn-danger btn-lg px-4" onClick={handleWithdraw}>
               Withdraw from Event
             </button>
-          ) : (
             <button className="btn btn-success btn-lg px-4" onClick={handleRegister}>
               Register for Event
             </button>
-          )}
         </div>
       </div>
     </div>

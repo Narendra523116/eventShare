@@ -10,7 +10,7 @@ function Events() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get("https://eventshare-2.onrender.com/api/events", {
+        const response = await axios.get("http://localhost:7000/api/events", {
           headers: {
             Authorization: `Bearer ${token}`, // Include the token in the request
           },
