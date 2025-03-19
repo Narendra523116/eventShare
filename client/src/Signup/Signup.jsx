@@ -31,7 +31,7 @@ function Signup() {
       return;
     }
 
-    const baseUrl = "http://localhost:7000";
+    const baseUrl = "https://eventshare-2.onrender.com";
 
     try {
       const url = baseUrl + "/api/student/signup"; // Only students can sign up

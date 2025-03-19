@@ -15,7 +15,7 @@ function EventDetails() {
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:7000/api/events/${id}`, {
+        const response = await axios.get(`https://eventshare-2.onrender.com/api/events/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setEvent(response.data);
@@ -43,7 +43,7 @@ function EventDetails() {
   const handleRegister = async () => {
     try {
       await axios.post(
-        `http://localhost:7000/api/events/register/${id}`,
+        `https://eventshare-2.onrender.com/api/events/register/${id}`,
         {}, // No need to send additional data in the body
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -59,7 +59,7 @@ function EventDetails() {
   const handleWithdraw = async () => {
     try {
       await axios.post(
-        `http://localhost:7000/api/events/${id}/withdraw`,
+        `https://eventshare-2.onrender.com/api/events/${id}/withdraw`,
         {}, // No need to send additional data in the body
         { headers: { Authorization: `Bearer ${token}` } }
       );

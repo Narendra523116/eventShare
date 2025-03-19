@@ -34,7 +34,7 @@ function Login() {
       return;
     }
 
-    const URL = `http://localhost:7000/api/${role}/login`; // Dynamic API URL
+    const URL = `https://eventshare-2.onrender.com/api/${role}/login`; // Dynamic API URL
 
     try {
       const response = await axios.post(URL, { email, password });
